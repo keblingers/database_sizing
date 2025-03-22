@@ -24,14 +24,13 @@ def get_size(db):
         print("==== get new data ====")
         conn = sqlalchemy_conn(db)
         now = get_date()
-        #print("===== Database Size ======")
-        #print(f"===== {db}")
         dbsize = """SELECT table_schema AS "Database", 
                     ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) AS "Size_MB" 
                     FROM information_schema.TABLES 
                     GROUP BY table_schema;"""
         df = pd.read_sql(dbsize,con=conn)
         df.rename(columns={"Size_MB":f"{now}"},inplace=True)
+        df.at['Total',now] = df[now].sum()
     except Exception as error:
         print(error)
     return df
