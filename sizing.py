@@ -11,10 +11,10 @@ def get_date():
 
     return now
 
-def read_excel(db):
+def read_excel(db,xlfile):
     try:
         print("==== read existing xlsx file =====")
-        dbsize = pd.read_excel('test.xlsx',sheet_name=db)
+        dbsize = pd.read_excel(xlfile,sheet_name=db)
     except Exception as error:
         print(error)
     return dbsize
@@ -39,7 +39,7 @@ def merge_data(db,xlfile):
     if os.path.exists(xlfile):
         try:
             newdata = get_size(db)
-            xldata = read_excel(db)
+            xldata = read_excel(db,xlfile)
             data = pd.merge(xldata,newdata,on=['Database','Database'],how='outer')
             with pd.ExcelWriter(xlfile) as writer:
                 data.to_excel(writer,sheet_name=db,index=False)
