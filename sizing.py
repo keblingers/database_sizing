@@ -1,4 +1,5 @@
 import pandas as pd
+from pyxll import xl_func,plot
 from db_conn import sqlalchemy_conn
 from dotenv import load_dotenv
 from pathlib import Path
@@ -43,6 +44,7 @@ def merge_data(db,xlfile):
             data = pd.merge(xldata,newdata,on=['Database','Database'],how='outer')
             with pd.ExcelWriter(xlfile) as writer:
                 data.to_excel(writer,sheet_name=db,index=False)
+            return data
         except Exception as error:
             print(error)
     else:
@@ -50,10 +52,10 @@ def merge_data(db,xlfile):
             newdata = get_size(db)
             with pd.ExcelWriter(xlfile) as writer:
                 newdata.to_excel(writer,sheet_name=db,index=False)
+            return newdata
         except Exception as error:
             print(error)
             
-    
 
 if __name__ == '__main__':
     evar = Path("/users/fatah/documents/repo/db_sizing/.varenv")
