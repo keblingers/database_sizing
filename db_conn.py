@@ -4,9 +4,8 @@ from dotenv import load_dotenv,find_dotenv
 import os
 from pathlib import Path
 
-def get_variables(db):
-    evar = Path("/users/fatah/documents/repo/db_sizing/.varenv")
-    load_dotenv(dotenv_path=evar)
+def get_variables(db,evar):
+    load_dotenv(evar)
     uname = os.environ['UNAME'].split(",")
     passwd = os.environ['PASSWD'].split(",")
     database = os.environ['DATABASE'].split(",")
@@ -19,8 +18,8 @@ def get_variables(db):
 
     return data['uname'].iloc[0],data['passwd'].iloc[0],data['database'].iloc[0],data['host'].iloc[0],data['db_driver'].iloc[0]
 
-def sqlalchemy_conn(db):
-    uname, passwd, dbname, hostname, dbdriver = get_variables(db)
+def sqlalchemy_conn(db,evar):
+    uname, passwd, dbname, hostname, dbdriver = get_variables(db,evar)
     try:
         engine = create_engine(f'{dbdriver}://{uname}:{passwd}@{hostname}/{dbname}')
         connected = engine.connect()
