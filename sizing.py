@@ -1,5 +1,4 @@
 import pandas as pd
-from pyxll import xl_func,plot
 from db_conn import sqlalchemy_conn
 from dotenv import load_dotenv
 from pathlib import Path
@@ -20,10 +19,10 @@ def read_excel(db,xlfile):
         print(error)
     return dbsize
 
-def get_size(db):
+def get_size(db,evar):
     try:
         print("==== get new data ====")
-        conn = sqlalchemy_conn(db)
+        conn = sqlalchemy_conn(db,evar)
         now = get_date()
         dbsize = """SELECT table_schema AS "Database", 
                     ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) AS "Size_MB" 
@@ -36,10 +35,10 @@ def get_size(db):
         print(error)
     return df
 
-def merge_data(db,xlfile):
+def merge_data(db,xlfile,evar):
     if os.path.exists(xlfile):
         try:
-            newdata = get_size(db)
+            newdata = get_size(db,evar)
             xldata = read_excel(db,xlfile)
             data = pd.merge(xldata,newdata,on=['Database','Database'],how='outer')
             with pd.ExcelWriter(xlfile) as writer:
@@ -58,14 +57,15 @@ def merge_data(db,xlfile):
             
 
 if __name__ == '__main__':
-    evar = Path("/users/fatah/documents/repo/db_sizing/.varenv")
-    load_dotenv(dotenv_path=evar)
-    database = os.environ['DATABASE'].split(",")
-    df = pd.DataFrame(list(zip(database)),columns=['database'])
+    
     parser = argparse.ArgumentParser(prog="db sizing",description="db sizing")
     parser.add_argument('-f','--excel-file',required=True, help="excel file that used to save the database size history")
+    parser.add_argument('-e','--env-file',required=True,help="env file for configuration")
     args = vars(parser.parse_args())
+    load_dotenv(args['env_file'])
     xlfile = Path(args['excel_file'])
+    database = os.environ['DATABASE'].split(",")
+    df = pd.DataFrame(list(zip(database)),columns=['database'])
     for x in database:
-        merge_data(x,xlfile)
+        merge_data(x,xlfile,args['env_file'])
     
