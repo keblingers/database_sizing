@@ -62,10 +62,11 @@ if __name__ == '__main__':
     parser.add_argument('-f','--excel-file',required=True, help="excel file that used to save the database size history")
     parser.add_argument('-e','--env-file',required=True,help="env file for configuration")
     args = vars(parser.parse_args())
-    load_dotenv(args['env_file'])
+    evar = Path(args['env_file'])
+    load_dotenv(evar)
     xlfile = Path(args['excel_file'])
     database = os.environ['DATABASE'].split(",")
     df = pd.DataFrame(list(zip(database)),columns=['database'])
     for x in database:
-        merge_data(x,xlfile,args['env_file'])
+        merge_data(x,xlfile,evar)
     
