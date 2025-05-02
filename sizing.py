@@ -33,7 +33,7 @@ def get_size(host,dbtype,evar):
         now = datetime.today().strftime("%d-%m-%Y")
         if dbtype == 'mysql':
             dbsize = """SELECT table_schema AS "database", 
-                        ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) AS "size_mb" 
+                        ROUND(SUM(data_length + index_length) / 1024 / 1024) AS "size_mb" 
                         FROM information_schema.TABLES 
                         GROUP BY table_schema;"""
         elif dbtype == 'postgres':
