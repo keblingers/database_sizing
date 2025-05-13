@@ -59,9 +59,10 @@ def how_many_days(filepath,sheetname,insname,instype,detailsheet,avgsize,freespa
         data = pd.read_excel(filepath,sheetname)
         data.loc[(data['instance_name'] == insname) & (data['instance_type'] == instype), 'days'] = count_days
         data.loc[(data['instance_name'] == insname) & (data['instance_type'] == instype), 'database_size'] 
+        return data
 
-        with pd.ExcelWriter(filepath,engine='openpyxl',mode='a',if_sheet_exists='replace') as writer:
-            data.to_excel(writer,sheet_name=sheetname,index=False)
+        # with pd.ExcelWriter(filepath,engine='openpyxl',mode='a',if_sheet_exists='replace') as writer:
+        #     data.to_excel(writer,sheet_name=sheetname,index=False)
 
     else:
         init_data = {"instance_name": [insname],
@@ -70,8 +71,17 @@ def how_many_days(filepath,sheetname,insname,instype,detailsheet,avgsize,freespa
                       "database_size": [lastsize],
         }
         data = pd.DataFrame(init_data)
+        return data
 
-        with pd.ExcelWriter(filepath,engine='openpyxl',mode='a',if_sheet_exists='replace') as writer:
-            data.to_excel(writer,sheet_name=sheetname,index=False)
+        # with pd.ExcelWriter(filepath,engine='openpyxl',mode='a',if_sheet_exists='replace') as writer:
+        #     data.to_excel(writer,sheet_name=sheetname,index=False)
 
-     
+def check_sheet(sheetname,xlpath):
+    wb = load_workbook(Path(xlpath),read_only=True)
+    if sheetname in wb.sheetnames:
+        print("sheet is exist")
+    else:
+        print(f"sheet is not exist, creating sheet {sheetname}")
+        with pd.ExcelWriter(xlpath, engine='openpyxl',mode='a') as writer:
+            df = pd.DataFrame()
+            df.to_excel(writer,sheet_name=sheetname,index=False)
